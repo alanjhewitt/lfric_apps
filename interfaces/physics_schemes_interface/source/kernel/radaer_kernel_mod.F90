@@ -393,6 +393,22 @@ subroutine radaer_code( nlayers,                                               &
 
   use ukca_radaer_lfric_api_mod,         only: ukca_radaer_lfric_interface
 
+  use ukca_radaer_lfric_list_mod,        only: max_fldname_len,                &
+                                               pvol_comp_names,                &
+                                               comp_names,                     &
+                                               mode_names,                     &
+                                               rhopar_mode_names,              &
+                                               dry_diam_mode_names,            &
+                                               modal_volume_names,             &
+                                               ait_sol_volume_names,           &
+                                               acc_sol_volume_names,           &
+                                               cor_sol_volume_names,           &
+                                               ait_ins_volume_names,           &
+                                               acc_ins_volume_names,           &
+                                               cor_ins_volume_names,           &
+                                               modal_wtv_names,                &
+                                               wet_diam_mode_names
+
   use ukca_radaer_lfric_init_mod,        only: n_ukca_mode, n_ukca_cpnt
 
   implicit none
@@ -604,126 +620,6 @@ subroutine radaer_code( nlayers,                                               &
   logical :: l_aod_ukca_cor_ins
   logical :: l_aaod_ukca_cor_ins
   logical :: l_any_lit_points
-
-  !-----------------------------------------------------------------------
-
-  integer, parameter :: max_fldname_len = 40
-
-  character(len=max_fldname_len), parameter, dimension(17) :: &
-       pvol_comp_names = [ 'fldname_pvol_su_ait_sol' , &
-                           'fldname_pvol_bc_ait_sol' , &
-                           'fldname_pvol_om_ait_sol' , &
-                           'fldname_pvol_su_acc_sol' , &
-                           'fldname_pvol_bc_acc_sol' , &
-                           'fldname_pvol_om_acc_sol' , &
-                           'fldname_pvol_ss_acc_sol' , &
-                           'fldname_pvol_du_acc_sol' , &
-                           'fldname_pvol_su_cor_sol' , &
-                           'fldname_pvol_bc_cor_sol' , &
-                           'fldname_pvol_om_cor_sol' , &
-                           'fldname_pvol_ss_cor_sol' , &
-                           'fldname_pvol_du_cor_sol' , &
-                           'fldname_pvol_bc_ait_ins' , &
-                           'fldname_pvol_om_ait_ins' , &
-                           'fldname_pvol_du_acc_ins' , &
-                           'fldname_pvol_du_cor_ins' ]
-
-  character(len=max_fldname_len), parameter, dimension(17) :: &
-       comp_names = [ 'fldname_ait_sol_su' , &
-                      'fldname_ait_sol_bc' , &
-                      'fldname_ait_sol_om' , &
-                      'fldname_acc_sol_su' , &
-                      'fldname_acc_sol_bc' , &
-                      'fldname_acc_sol_om' , &
-                      'fldname_acc_sol_ss' , &
-                      'fldname_acc_sol_du' , &
-                      'fldname_cor_sol_su' , &
-                      'fldname_cor_sol_bc' , &
-                      'fldname_cor_sol_om' , &
-                      'fldname_cor_sol_ss' , &
-                      'fldname_cor_sol_du' , &
-                      'fldname_ait_ins_bc' , &
-                      'fldname_ait_ins_om' , &
-                      'fldname_acc_ins_du' , &
-                      'fldname_cor_ins_du' ]
-
-  character(len=max_fldname_len), parameter, dimension(6) :: &
-       mode_names = [ 'fldname_n_ait_sol' , &
-                      'fldname_n_acc_sol' , &
-                      'fldname_n_cor_sol' , &
-                      'fldname_n_ait_ins' , &
-                      'fldname_n_acc_ins' , &
-                      'fldname_n_cor_ins' ]
-
-  character(len=max_fldname_len), parameter, dimension(6) :: &
-       rhopar_mode_names = [ 'fldname_rhopar_ait_sol' , &
-                             'fldname_rhopar_acc_sol' , &
-                             'fldname_rhopar_cor_sol' , &
-                             'fldname_rhopar_ait_ins' , &
-                             'fldname_rhopar_acc_ins' , &
-                             'fldname_rhopar_cor_ins' ]
-
-  character(len=max_fldname_len), parameter, dimension(6) :: &
-       dry_diam_mode_names = [ 'fldname_drydp_ait_sol' , &
-                               'fldname_drydp_acc_sol' , &
-                               'fldname_drydp_cor_sol' , &
-                               'fldname_drydp_ait_ins' , &
-                               'fldname_drydp_acc_ins' , &
-                               'fldname_drydp_cor_ins' ]
-
-  character(len=max_fldname_len), parameter, dimension(6) :: &
-       modal_volume_names = [ 'fldname_mod_vol_ait_sol' , &
-                              'fldname_mod_vol_acc_sol' , &
-                              'fldname_mod_vol_cor_sol' , &
-                              'fldname_mod_vol_ait_ins' , &
-                              'fldname_mod_vol_acc_ins' , &
-                              'fldname_mod_vol_cor_ins' ]
-
-  character(len=max_fldname_len), parameter, dimension(4) :: &
-       ait_sol_volume_names = [ 'pvol_wat_ait_sol' , &
-                                'pvol_su_ait_sol ' , &
-                                'pvol_bc_ait_sol ' , &
-                                'pvol_om_ait_sol ' ]
-
-  character(len=max_fldname_len), parameter,dimension(5) :: &
-       acc_sol_volume_names = [ 'pvol_wat_acc_sol' , &
-                                'pvol_su_acc_sol ' , &
-                                'pvol_bc_acc_sol ' , &
-                                'pvol_om_acc_sol ' , &
-                                'pvol_ss_acc_sol ' ]
-
-  character(len=max_fldname_len), parameter,dimension(5) :: &
-       cor_sol_volume_names = [ 'pvol_wat_cor_sol' , &
-                                'pvol_su_cor_sol ' , &
-                                'pvol_bc_cor_sol ' , &
-                                'pvol_om_cor_sol ' , &
-                                'pvol_ss_cor_sol ' ]
-
-  character(len=max_fldname_len), parameter,dimension(2) :: &
-       ait_ins_volume_names = [ 'pvol_bc_ait_ins' , &
-                                'pvol_om_ait_ins' ]
-
-  character(len=max_fldname_len), parameter, dimension(1) :: &
-       acc_ins_volume_names = [ 'pvol_du_acc_ins' ]
-
-  character(len=max_fldname_len), parameter, dimension(1) :: &
-       cor_ins_volume_names = [ 'pvol_du_cor_ins' ]
-
-  character(len=max_fldname_len), parameter, dimension(6) :: &
-       modal_wtv_names = [ 'fldname_pvol_wat_ait_sol' , &
-                           'fldname_pvol_wat_acc_sol' , &
-                           'fldname_pvol_wat_cor_sol' , &
-                           'fldname_pvol_wat_ait_ins' , &
-                           'fldname_pvol_wat_acc_ins' , &
-                           'fldname_pvol_wat_cor_ins' ]
-
-  character(len=max_fldname_len), parameter, dimension(6) :: &
-       wet_diam_mode_names = [ 'fldname_wetdp_ait_sol' , &
-                               'fldname_wetdp_acc_sol' , &
-                               'fldname_wetdp_cor_sol' , &
-                               'fldname_wetdp_ait_ins' , &
-                               'fldname_wetdp_acc_ins' , &
-                               'fldname_wetdp_cor_ins' ]
 
   !-----------------------------------------------------------------------
 
