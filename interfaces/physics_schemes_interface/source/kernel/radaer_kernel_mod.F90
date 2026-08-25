@@ -355,7 +355,8 @@ subroutine radaer_code( nlayers,                                               &
 
 
   use constants_mod,                     only: r_def, i_def, r_um, i_um
-  use aerosol_config_mod,                only: n_radaer_step
+  use aerosol_config_mod,                only: n_radaer_step,                  &
+                                               l_ukca_radaer_sustrat
   use socrates_init_mod,                 only: n_sw_band,                      &
                                                sw_n_band_exclude,              &
                                                sw_index_exclude,               &
@@ -1382,6 +1383,8 @@ subroutine radaer_code( nlayers,                                               &
       ukca_modal_wtv,                                                          &
       ! Logical to describe orientation
       l_inverted,                                                              &
+      ! Logical to account for optical properties of sulphate in atmosphere
+      l_ukca_radaer_sustrat,                                                   &
       ! Control option for prescribed single scattering albedo array
       i_ukca_radaer_prescribe_ssa,                                             &
       ! Model level of the tropopause (input)
