@@ -62,9 +62,9 @@ class vn32_t698(MacroUpgrade):
                           ["namelist:aerosol", "l_dust_mp_ageing"],
                           ".false." )
 
-        # Default to false since this is the setting in all existing tests
+        # Default to true since this is the setting in all existing tests
         self.add_setting( config,
                           ["namelist:aerosol", "l_ukca_radaer_sustrat"],
-                          ".false." )
+                          ".true." )
 
         return config, self.reports

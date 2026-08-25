@@ -69,8 +69,8 @@ subroutine um_radaer_init()
     ! Dust ageing turned off
     l_dust_mp_ageing_local    = .false.
 
-    ! sustrat turned off
-    l_ukca_radaer_sustrat_local = .false.
+    ! sustrat turned on
+    l_ukca_radaer_sustrat_local = .true.
 
     if ( l_radaer) then
 
@@ -92,8 +92,8 @@ subroutine um_radaer_init()
     ! Dust ageing not allowed for dust only ukca
     l_dust_mp_ageing_local    = .false.
 
-    ! sustrat turned off
-    l_ukca_radaer_sustrat_local = .false.
+    ! sustrat turned on
+    l_ukca_radaer_sustrat_local = .true.
 
     if ( l_radaer) then
 
@@ -115,8 +115,8 @@ subroutine um_radaer_init()
     ! Dust ageing turned off
     l_dust_mp_ageing_local    = .false.
 
-    ! sustrat turned off
-    l_ukca_radaer_sustrat_local = .false.
+    ! sustrat turned on
+    l_ukca_radaer_sustrat_local = .true.
 
     if ( l_radaer) then
 
