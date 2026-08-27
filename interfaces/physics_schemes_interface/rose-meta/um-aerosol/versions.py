@@ -29,7 +29,6 @@ class vn32_t698(MacroUpgrade):
     Users can now set dust ageing via the namelist.
 
     Users can now set radaer SUstrat via the namelist.
-
     """
 
     BEFORE_TAG = "vn3.2"
@@ -38,24 +37,10 @@ class vn32_t698(MacroUpgrade):
     def upgrade(self, config, meta_config=None):
         # Add settings
 
-        glomap_mode = self.get_setting_value(config,
-                                             ["namelist:aerosol",
-                                              "glomap_mode"])
-
-        if glomap_mode == "'dust_and_clim'":
-            # Existing suites with dust_and_clim need mode_setup==6
-            mode_setup = "'DUonly_2mode'"
-        elif glomap_mode == "'ukca'":
-            # Existing suites with ukca need mode_setup==8
-            mode_setup = "'SUBCOCSSDU_7mode'"
-        else:
-            # This is trigger ignored - default to SUBCOCSSDU_7mode
-            mode_setup = "'SUBCOCSSDU_7mode'"
-
-        # Add new settings with the specified option
+        # Add new settings with the default option SUBCOCSSDU_7mode
         self.add_setting( config,
                           ["namelist:aerosol","mode_setup"],
-                          mode_setup )
+                          "'SUBCOCSSDU_7mode'")
 
         # Default to false since this is the setting in all existing tests
         self.add_setting( config,

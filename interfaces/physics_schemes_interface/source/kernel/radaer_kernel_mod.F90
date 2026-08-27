@@ -380,12 +380,6 @@ subroutine radaer_code( nlayers,                                               &
                                                ip_ukca_mode_accum,             &
                                                ip_ukca_mode_coarse
 
-  use ukca_radaer_band_average_mod,      only: ukca_radaer_band_average
-
-  use ukca_radaer_prepare_mod,           only: ukca_radaer_prepare
-
-  use ukca_radaer_compute_aod_mod,       only: ukca_radaer_compute_aod
-
   use planet_config_mod,                 only: p_zero, kappa, gravity
 
   use ukca_radaer_precalc,               only: npd_ukca_aod_wavel

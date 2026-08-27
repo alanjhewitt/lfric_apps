@@ -100,7 +100,9 @@ module um_ukca_init_mod
                           ukca_maxlen_emiss_vert_fact,                         &
                           ukca_strat_lbc_env,                                  &
                           ukca_get_photol_reaction_data,                       &
-                          ukca_photol_varname_len
+                          ukca_photol_varname_len,                             &
+                          ukca_i_sussbcocdu_7mode,                             &
+                          ukca_i_du_2mode
 
   ! Photolysis module
   use photol_api_mod,  only: photol_jlabel_len, photol_fieldname_len,          &
@@ -108,9 +110,6 @@ module um_ukca_init_mod
     photol_max_miesets, photol_n_solcyc_av, photol_sw_band_aer,                &
     photol_sw_phases, photol_max_wvl, photol_max_crossec,                      &
     photol_wvl_intervals, photol_num_tvals
-
-  use ukca_config_specification_mod, only: i_sussbcocdu_7mode,                 &
-                                           i_du_2mode
 
   implicit none
 
@@ -933,12 +932,12 @@ contains
 
       select case( mode_setup )
       case ( mode_setup_SUBCOCSSDU_7mode )
-        i_mode_setup_local = i_sussbcocdu_7mode
+        i_mode_setup_local = ukca_i_sussbcocdu_7mode
       case ( mode_setup_DUonly_2mode )
-        i_mode_setup_local = i_du_2mode
+        i_mode_setup_local = ukca_i_du_2mode
       case default
         write( log_scratch_space, '(A,I0)' )                                   &
-        'Developers should include additional mode settings here: ', mode_setup
+        'This Glomap option is not supported yet. Include it here ', mode_setup
         call log_event( log_scratch_space, LOG_LEVEL_ERROR )
       end select
 

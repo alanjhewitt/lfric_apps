@@ -18,18 +18,16 @@ module um_radaer_init_mod
                                            mode_setup_SUBCOCSSDU_7mode,        &
                                            mode_setup_DUonly_2mode,            &
                                            l_dust_mp_ageing,                   &
-                                           l_radaer,                           &
                                            l_ukca_radaer_sustrat
 
-  use ukca_mode_setup,               only: i_ukca_bc_tuned,                    &
-                                           i_ukca_tune_bc_off
+  use ukca_api_mod,                  only: ukca_i_sussbcocdu_7mode,            &
+                                           ukca_i_du_2mode,                    &
+                                           ukca_i_ukca_bc_tuned,               &
+                                           ukca_i_ukca_tune_bc_off
 
   use constants_mod,                 only: i_um
 
   use ukca_radaer_lfric_init_mod,    only: ukca_radaer_lfric_init
-
-  use ukca_config_specification_mod, only: i_sussbcocdu_7mode,                 &
-                                           i_du_2mode
 
   use log_mod,                       only: log_event,                          &
                                            log_scratch_space,                  &
@@ -60,11 +58,11 @@ subroutine um_radaer_init()
 
   if ( glomap_mode == glomap_mode_climatology ) then
     ! mode_setup is not set in the namelist for glomap_mode_climatology
-    ! this is always fixed to i_sussbcocdu_7mode.
-    i_mode_setup_radaer_local = i_sussbcocdu_7mode
+    ! this is always fixed to ukca_i_sussbcocdu_7mode.
+    i_mode_setup_radaer_local = ukca_i_sussbcocdu_7mode
 
     ! Tune BC turned off
-    i_ukca_tune_bc_local      = i_ukca_tune_bc_off
+    i_ukca_tune_bc_local      = ukca_i_ukca_tune_bc_off
 
     ! Dust ageing turned off
     l_dust_mp_ageing_local    = .false.
@@ -72,22 +70,20 @@ subroutine um_radaer_init()
     ! sustrat turned on
     l_ukca_radaer_sustrat_local = .true.
 
-    if ( l_radaer) then
-
-      call ukca_radaer_lfric_init( i_mode_setup_radaer_local,                  &
-                                   i_ukca_tune_bc_local,                       &
-                                   l_dust_mp_ageing_local,                     &
-                                   l_ukca_radaer_sustrat_local )
+    call ukca_radaer_lfric_init( i_mode_setup_radaer_local,                    &
+                                 i_ukca_tune_bc_local,                         &
+                                 l_dust_mp_ageing_local,                       &
+                                 l_ukca_radaer_sustrat_local )
 
     end if
 
   else if ( glomap_mode == glomap_mode_dust_and_clim ) then
     ! dust_and_clim runs with a diffent mode_setup between ukca and radaer
-    ! this is always fixed to i_sussbcocdu_7mode.
-    i_mode_setup_radaer_local = i_sussbcocdu_7mode
+    ! this is always fixed to ukca_i_sussbcocdu_7mode.
+    i_mode_setup_radaer_local = ukca_i_sussbcocdu_7mode
 
     ! Tune BC turned off
-    i_ukca_tune_bc_local      = i_ukca_tune_bc_off
+    i_ukca_tune_bc_local      = ukca_i_ukca_tune_bc_off
 
     ! Dust ageing not allowed for dust only ukca
     l_dust_mp_ageing_local    = .false.
@@ -95,22 +91,18 @@ subroutine um_radaer_init()
     ! sustrat turned on
     l_ukca_radaer_sustrat_local = .true.
 
-    if ( l_radaer) then
-
-      call ukca_radaer_lfric_init( i_mode_setup_radaer_local,                  &
-                                   i_ukca_tune_bc_local,                       &
-                                   l_dust_mp_ageing_local,                     &
-                                   l_ukca_radaer_sustrat_local )
-
-    end if
+    call ukca_radaer_lfric_init( i_mode_setup_radaer_local,                    &
+                                 i_ukca_tune_bc_local,                         &
+                                 l_dust_mp_ageing_local,                       &
+                                 l_ukca_radaer_sustrat_local )
 
   else if ( glomap_mode == glomap_mode_radaer_test ) then
     ! This was developed for aqua planet runs and may be redundant
-    ! For now fix this to i_sussbcocdu_7mode.
-    i_mode_setup_radaer_local = i_sussbcocdu_7mode
+    ! For now fix this to ukca_i_sussbcocdu_7mode.
+    i_mode_setup_radaer_local = ukca_i_sussbcocdu_7mode
 
     ! Tune BC turned off
-    i_ukca_tune_bc_local      = i_ukca_tune_bc_off
+    i_ukca_tune_bc_local      = ukca_i_ukca_tune_bc_off
 
     ! Dust ageing turned off
     l_dust_mp_ageing_local    = .false.
@@ -118,14 +110,10 @@ subroutine um_radaer_init()
     ! sustrat turned on
     l_ukca_radaer_sustrat_local = .true.
 
-    if ( l_radaer) then
-
-      call ukca_radaer_lfric_init( i_mode_setup_radaer_local,                  &
-                                   i_ukca_tune_bc_local,                       &
-                                   l_dust_mp_ageing_local,                     &
-                                   l_ukca_radaer_sustrat_local )
-
-    end if
+    call ukca_radaer_lfric_init( i_mode_setup_radaer_local,                    &
+                                 i_ukca_tune_bc_local,                         &
+                                 l_dust_mp_ageing_local,                       &
+                                 l_ukca_radaer_sustrat_local )
 
   else if ( glomap_mode == glomap_mode_ukca ) then
     ! UKCA and RADAER will use the same value for mode_setup
@@ -133,17 +121,17 @@ subroutine um_radaer_init()
     ! Match rose-meta integers with those used in UKCA
     select case ( mode_setup )
     case ( mode_setup_SUBCOCSSDU_7mode )    
-      i_mode_setup_radaer_local = i_sussbcocdu_7mode
+      i_mode_setup_radaer_local = ukca_i_sussbcocdu_7mode
     case ( mode_setup_DUonly_2mode )
-      i_mode_setup_radaer_local = i_du_2mode
+      i_mode_setup_radaer_local = ukca_i_du_2mode
     case default
       write( log_scratch_space, '(A,I0)' )                                     &
       'Developers should include additional mode settings here: ', mode_setup
       call log_event( log_scratch_space, LOG_LEVEL_ERROR )
     end select
 
-    ! UKCA currently set to i_ukca_bc_tuned
-    i_ukca_tune_bc_local      = i_ukca_bc_tuned
+    ! UKCA currently set to ukca_i_ukca_bc_tuned
+    i_ukca_tune_bc_local      = ukca_i_ukca_bc_tuned
 
     ! Dust ageing set by namelist
     l_dust_mp_ageing_local    = l_dust_mp_ageing
@@ -151,14 +139,10 @@ subroutine um_radaer_init()
     ! sustrat set by namelist
     l_ukca_radaer_sustrat_local = l_ukca_radaer_sustrat
 
-    if ( l_radaer) then
-
-      call ukca_radaer_lfric_init( i_mode_setup_radaer_local,                  &
-                                   i_ukca_tune_bc_local,                       &
-                                   l_dust_mp_ageing_local,                     &
-                                   l_ukca_radaer_sustrat_local )
-
-    end if
+    call ukca_radaer_lfric_init( i_mode_setup_radaer_local,                    &
+                                 i_ukca_tune_bc_local,                         &
+                                 l_dust_mp_ageing_local,                       &
+                                 l_ukca_radaer_sustrat_local )
 
   end if
 

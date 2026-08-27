@@ -443,6 +443,7 @@ contains
                                           radiation_socrates, &
                                           surface,            &
                                           surface_jules
+    use aerosol_config_mod,         only: l_radaer
 #endif
     use config_mod,                 only: config_type
 
@@ -495,13 +496,18 @@ contains
       call um_ukca_init(ncells_ukca, model_clock)
       ! This is the way into the UKCA repo
 
-      ! Read all the radaer lut namelist files
-      call um_radaer_lut_init()
+      if ( l_radaer ) then
 
-      ! Initialisation of UKCA RADAER variables
-      call um_radaer_init()
+        ! Read all the radaer lut namelist files
+        call um_radaer_lut_init()
+
+        ! Initialisation of UKCA RADAER variables
+        call um_radaer_init()
+
+      end if  
 
     end if
+
 #endif
   end subroutine basic_initialisations
 
