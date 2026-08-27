@@ -75,8 +75,6 @@ subroutine um_radaer_init()
                                  l_dust_mp_ageing_local,                       &
                                  l_ukca_radaer_sustrat_local )
 
-    end if
-
   else if ( glomap_mode == glomap_mode_dust_and_clim ) then
     ! dust_and_clim runs with a diffent mode_setup between ukca and radaer
     ! this is always fixed to ukca_i_sussbcocdu_7mode.
