@@ -504,7 +504,7 @@ contains
         ! Initialisation of UKCA RADAER variables
         call um_radaer_init()
 
-      end if  
+      end if
 
     end if
 
