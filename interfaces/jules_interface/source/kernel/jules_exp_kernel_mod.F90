@@ -1927,4 +1927,5 @@ contains
 
   end subroutine jules_exp_code
 
+! make a note that i may need to edit this module
 end module jules_exp_kernel_mod
