@@ -53,6 +53,13 @@
     {% set phystest = false %}
 {% endif %}
 
+{# metadatatest settings #}
+{% if "metadata_test" in task_values %}
+    {% set metadatatest = true %}
+{% else %}
+    {% set metadatatest = false %}
+{% endif %}
+
 {# If the task has a restart and has set crun_compare=false, there is no #}
 {# nrun-crun comparison to be made, so don't run the nrun test #}
 {% set running_nrun = true %}
@@ -127,10 +134,23 @@
 {# Do we need to run the mesh? #}
 {# Any run task will need mesh unless it is a canned test #}
 {% if task.startswith("run") and task_values["app_name"] != "canned_test" %}
-    {% set mesh_run_task = "run_mesh_"~
-                           task_values["resolution"]~"_"~
-                           task_ns.platform~"_"~
-                           site_vars["mesh_build"][task_ns.platform] %}
+    {% if "_op" in task_values["resolution"] %}
+        {% set mesh_op_name =  task_values["mpi_parts"]~"P-"~
+                               task_values["panel_decomp"]~"-"~
+                               task_values["xproc"]~"X-"~
+                               task_values["yproc"]~"Y" %}
+        {% do task_values.update({"mesh_op_name": mesh_op_name}) %}
+        {% set mesh_run_task = "run_mesh_"~
+                               task_values["resolution"]~"-"~
+                               mesh_op_name~"_"~
+                               task_ns.platform~"_"~
+                               site_vars["mesh_build"][task_ns.platform] %}
+    {% else %}
+        {% set mesh_run_task = "run_mesh_"~
+                               task_values["resolution"]~"_"~
+                               task_ns.platform~"_"~
+                               site_vars["mesh_build"][task_ns.platform] %}
+    {% endif %}
 {# If the task is the mesh run task then use the task dictionary #}
 {# Otherwise use an empty dict to be populated later #}
     {% if mesh_run_task not in tasks_to_run %}
@@ -138,8 +158,26 @@
             {% do tasks_to_run.update({mesh_run_task: task_values}) %}
         {% else %}
             {% set mesh_dict = {} %}
+            {% if "_op" in task_values["resolution"] %}
+                {% do mesh_dict.update({"mesh_op_name": mesh_op_name}) %}
+            {% endif %}
             {% if "mpi_parts" in task_values %}
                 {% do mesh_dict.update({"mpi_parts": task_values["mpi_parts"]}) %}
+            {% endif %}
+            {% if "mesh_cpus" in task_values %}
+                {% do mesh_dict.update({"mesh_cpus": task_values["mesh_cpus"]}) %}
+            {% endif %}
+            {% if "mesh_memory" in task_values %}
+                {% do mesh_dict.update({"mesh_memory": task_values["mesh_memory"]}) %}
+            {% endif %}
+            {% if "panel_decomp" in task_values %}
+                {% do mesh_dict.update({"mesh_panel_decomp": task_values["panel_decomp"]}) %}
+            {% endif %}
+            {% if "xproc" in task_values %}
+                {% do mesh_dict.update({"mesh_xproc": task_values["xproc"]}) %}
+            {% endif %}
+            {% if "yproc" in task_values %}
+                {% do mesh_dict.update({"mesh_yproc": task_values["yproc"]}) %}
             {% endif %}
             {% do tasks_to_run.update({mesh_run_task: mesh_dict}) %}
         {% endif %}
@@ -292,11 +330,26 @@
             application_run_task,
             app_perftools_export_task]) %}
     {% endif %}
+
+    {% if metadatatest %}
+        {% set metadatatest_task = "metadata_test_"~
+                               task_ns.application~"_"~
+                               task_ns.conf_name~"_"~
+                               task_ns.platform~"_"~
+                               task_ns.compiler~"_"~
+                               task_ns.extras %}
+        {% if metadatatest_task not in tasks_to_run %}
+            {% do tasks_to_run.update({metadatatest_task: task_values }) %}
+        {% endif %}
+        {% do graph_sections.append([
+            application_run_task,
+            metadatatest_task]) %}
+    {% endif %}
 {% endif %}
 
-{# lfric_coupled graphs require fcm_make tasks before the application run #}
-{% if task_ns.application == "lfric_coupled" %}
-    {% include "templates/graph/populate_graph_lfric_coupled.cylc" %}
+{# Coupled runs require fcm_make tasks before the application run #}
+{% if task_values["coupled"] %}
+    {% include "templates/graph/populate_graph_coupled.cylc" %}
 {% endif %}
 
 {# lfric2lfric, lfric2um, and um2lfric graphs require generate_weights tasks before the application run #}
