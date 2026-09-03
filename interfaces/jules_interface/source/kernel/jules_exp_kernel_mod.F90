@@ -313,6 +313,9 @@ contains
   !> @param[in]     ndf_dust               Number of DOFs per cell for dust divisions
   !> @param[in]     undf_dust              Number of total DOFs for dust divisions
   !> @param[in]     map_dust               Dofmap for cell for dust divisions
+  ! AJH pro tip
+  ! put each argument on a separate line so that its easy to
+  ! compare the kernel and algorithm with side by side editors
   subroutine jules_exp_code(nlayers, seg_len, seg_len_halo,       &
                            theta_in_wth,                          &
                            exner_in_wth,                          &

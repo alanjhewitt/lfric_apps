@@ -402,7 +402,13 @@ contains
     ! Switch UM to running i-first on whole domain
     call um_sizes_init(ncells)
     ! Call explicit Jules scheme
-    call invoke_jules_exp_kernel_type(ncells, ncells_halo, theta, exner_in_wth,&
+
+    ! AJH pro tip
+    ! When we update this module - put one argument on each line
+    ! It will let you put kernel and algorithm editors side by side
+    ! so you can easily see if the argument lists match each other
+
+    call invoke( jules_exp_kernel_type( theta, exner_in_wth,                   &
                                u_in_w3, v_in_w3,                               &
                                mr_n(imr_v), mr_n(imr_cl), mr_ice,              &
                                height_w3, height_wth, zh, z0msea, z0m,         &
@@ -447,8 +453,7 @@ contains
                                urbhwr, urbhgt, urbztm, urbdisp,                &
                                rhostar, recip_l_mo_sea,                        &
                                t1_sd_2d, q1_sd_2d,                             &
-                               gross_prim_prod, z0h_eff, ocn_cpl_point,        &
-                               stencil_depth)
+                               gross_prim_prod, z0h_eff, ocn_cpl_point ) )
 
     ! Switch UM back to columns
     call um_sizes_init(1_i_def)
