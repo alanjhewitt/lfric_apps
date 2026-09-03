@@ -10,8 +10,8 @@
                       'module use /home/users/lfricadmin/lmod' %}
 
 {% set azspice_compiler_gnu = 'module load lfric/vn3.2;' ~
-                                'module unload py-psyclone;' ~
-                                'source ~/data/users/alan.j.hewitt/branches/Github/PSyclone/.venv/bin/activate' %}
+                              'module unload py-psyclone;' ~
+                              'source /data/users/alan.j.hewitt/branches/Github/PSyclone/.venv/bin/activate' %}
 
 {% set azspice_coupled_gnu = 'module load xios/2.2701-oasis ; '~
                              'module load oasis' %}
