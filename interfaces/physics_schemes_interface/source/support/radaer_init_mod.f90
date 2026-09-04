@@ -75,7 +75,8 @@ subroutine um_radaer_init()
                                  l_dust_mp_ageing_local,                       &
                                  l_ukca_radaer_sustrat_local )
 
-  else if ( glomap_mode == glomap_mode_dust_and_clim ) then
+  else if ( ( glomap_mode == glomap_mode_dust_and_clim ) .or.                  &
+            ( glomap_mode == glomap_mode_radaer_test   ) ) then
     ! dust_and_clim runs with a diffent mode_setup between ukca and radaer
     ! this is always fixed to ukca_i_sussbcocdu_7mode.
     i_mode_setup_radaer_local = ukca_i_sussbcocdu_7mode
@@ -84,25 +85,6 @@ subroutine um_radaer_init()
     i_ukca_tune_bc_local      = ukca_i_ukca_tune_bc_off
 
     ! Dust ageing not allowed for dust only ukca
-    l_dust_mp_ageing_local    = .false.
-
-    ! sustrat turned on
-    l_ukca_radaer_sustrat_local = .true.
-
-    call ukca_radaer_lfric_init( i_mode_setup_radaer_local,                    &
-                                 i_ukca_tune_bc_local,                         &
-                                 l_dust_mp_ageing_local,                       &
-                                 l_ukca_radaer_sustrat_local )
-
-  else if ( glomap_mode == glomap_mode_radaer_test ) then
-    ! This was developed for aqua planet runs and may be redundant
-    ! For now fix this to ukca_i_sussbcocdu_7mode.
-    i_mode_setup_radaer_local = ukca_i_sussbcocdu_7mode
-
-    ! Tune BC turned off
-    i_ukca_tune_bc_local      = ukca_i_ukca_tune_bc_off
-
-    ! Dust ageing turned off
     l_dust_mp_ageing_local    = .false.
 
     ! sustrat turned on
