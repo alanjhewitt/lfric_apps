@@ -1729,6 +1729,8 @@ if (n_dp  >   0 .and. iconv_deep >  0 ) then
 
   if (iconv_deep == 1) then  ! 4A like Gregory Rowntree deep conv
 
+    ! Vernier Calipers 1 start here
+     
     call deep_conv_6a(                                                         &
                             !in
        nbl,nlev,ntra,n_wtrac,n_cca_lev,n_dp,trlev,                             &
@@ -1777,6 +1779,8 @@ if (n_dp  >   0 .and. iconv_deep >  0 ) then
        dt_dd_temp, dq_dd_temp, area_ud_temp,                                   &
        error_point                                                             &
        )
+
+    ! Vernier Calipers 1 end here
 
     if (error_point /= 0) then
       errorstatus = 2   ! will cause model to fail
