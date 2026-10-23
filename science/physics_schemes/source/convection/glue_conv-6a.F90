@@ -143,6 +143,15 @@ use qsat_mod, only: qsat, qsat_mix
 
 use gen_phys_inputs_mod, only: l_mr_physics
 use mphys_inputs_mod,    only: l_progn_tnuc
+
+
+use vernier_mod,        only:   vernier_init, vernier_start,      &
+                                vernier_stop, vernier_write,      &
+                                vernier_finalize, vik
+
+
+
+
 implicit none
 ! Model Constants required
 
@@ -1325,6 +1334,11 @@ integer(kind=jpim), parameter :: zhook_in  = 0
 integer(kind=jpim), parameter :: zhook_out = 1
 real(kind=jprb)               :: zhook_handle
 
+! Vernier stuff
+integer, parameter :: tik = vik
+integer(tik), private :: timing_init_6a_rain_handle
+integer(tik), private :: timing_deep_conv_6a_handle
+
 if (lhook) call dr_hook(ModuleName//':'//RoutineName,zhook_in,zhook_handle)
 
 !-----------------------------------------------------------------------
@@ -1333,10 +1347,14 @@ if (lhook) call dr_hook(ModuleName//':'//RoutineName,zhook_in,zhook_handle)
 !
 ! Initialise 3d rain variables
 
+call vernier_start( timing_init_6a_rain_handle, RoutineName )
+
 call init_6a_rain(seg_size, nlev, n_sh, n_dp, n_cg, n_md, rain_3d_sh, snow_3d_sh, &
                   rain_3d_dp, snow_3d_dp, rain_3d_cg, snow_3d_cg, rain_3d_md,  &
                   snow_3d_md, ind_cape_reduced, cape_ts_used, ind_deep,        &
                   ind_shall, kterm_deep, kterm_shall, kterm_congest )
+
+call vernier_stop( timing_init_6a_rain_handle )
 
 !==========================================
 ! Initialise local arrays for w-eqn
@@ -1730,6 +1748,7 @@ if (n_dp  >   0 .and. iconv_deep >  0 ) then
   if (iconv_deep == 1) then  ! 4A like Gregory Rowntree deep conv
 
     ! Vernier Calipers 1 start here
+    call vernier_start( timing_deep_conv_6a_handle, RoutineName )
      
     call deep_conv_6a(                                                         &
                             !in
@@ -1781,6 +1800,7 @@ if (n_dp  >   0 .and. iconv_deep >  0 ) then
        )
 
     ! Vernier Calipers 1 end here
+    call vernier_stop( timing_deep_conv_6a_handle )
 
     if (error_point /= 0) then
       errorstatus = 2   ! will cause model to fail
