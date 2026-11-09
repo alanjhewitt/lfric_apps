@@ -1342,8 +1342,8 @@ real(kind=jprb)               :: zhook_handle
 
 ! In lfric_apps use timer not vernier
 
-integer(tik), private :: tid_init_6a_rain
-integer(tik), private :: tid_deep_conv_6a
+integer(tik) :: tid_init_6a_rain
+integer(tik) :: tid_deep_conv_6a
 
 if (lhook) call dr_hook(ModuleName//':'//RoutineName,zhook_in,zhook_handle)
 
