@@ -695,7 +695,12 @@ subroutine radaer_code( nlayers,                                               &
   ! -- ukca_comp_vol --
   n_fields = size(pvol_comp_names)
   allocate(ukca_comp_vol(n_fields, 1, nlayers))
-  ukca_comp_vol = 0.0_r_um
+
+  do k = 1, nlayers
+    do m = 1, n_fields
+      ukca_comp_vol(m, 1, k) = 0.0_r_um
+    end do
+  end do
 
   do m = 1, n_fields
     select case(trim(pvol_comp_names(m)))
@@ -777,7 +782,12 @@ subroutine radaer_code( nlayers,                                               &
   ! -- ukca_mix_ratio --
   n_fields = size(comp_names)
   allocate(ukca_mix_ratio(n_fields, 1, nlayers))
-  ukca_mix_ratio = 0.0_r_um
+
+  do k = 1, nlayers
+    do m = 1, n_fields
+      ukca_mix_ratio(m, 1, k) = 0.0_r_um
+    end do
+  end do
 
   do m = 1, n_fields
     select case(trim(comp_names(m)))
@@ -859,8 +869,13 @@ subroutine radaer_code( nlayers,                                               &
   ! -- ukca_modal_nbr --
   n_fields = size(mode_names)
   allocate(ukca_modal_nbr(1, nlayers, n_fields))
-  ukca_modal_nbr = 0.0_r_um
 
+  do m = 1, n_fields
+    do k = 1, nlayers
+      ukca_modal_nbr(1, k, m) = 0.0_r_um
+    end do
+  end do
+  
   do m = 1, n_fields
     select case(trim(mode_names(m)))
     case('fldname_n_nuc_sol')
@@ -901,7 +916,12 @@ subroutine radaer_code( nlayers,                                               &
   ! -- ukca_modal_rho --
   n_fields = size(rhopar_mode_names)
   allocate(ukca_modal_rho(1, nlayers, n_fields))
-  ukca_modal_rho = 0.0_r_um
+
+  do m = 1, n_fields
+    do k = 1, nlayers
+      ukca_modal_rho(1, k, m) = 0.0_r_um
+    end do
+  end do
 
   do m = 1, n_fields
     select case(trim(rhopar_mode_names(m)))
@@ -939,7 +959,12 @@ subroutine radaer_code( nlayers,                                               &
   ! -- ukca_dry_diam --
   n_fields = size(dry_diam_mode_names)
   allocate(ukca_dry_diam(1, nlayers, n_fields))
-  ukca_dry_diam = 0.0_r_um
+
+  do m = 1, n_fields
+    do k = 1, nlayers
+      ukca_dry_diam(1, k, m) = 0.0_r_um
+    end do
+  end do
 
   do m = 1, n_fields
     select case(trim(dry_diam_mode_names(m)))
@@ -977,8 +1002,13 @@ subroutine radaer_code( nlayers,                                               &
   ! -- ukca_modal_vol --
   n_fields = size(modal_volume_names)
   allocate(ukca_modal_vol(1, nlayers, n_fields))
-  ukca_modal_vol = 0.0_r_um
 
+  do m = 1, n_fields
+    do k = 1, nlayers
+      ukca_modal_vol(1, k, m) = 0.0_r_um
+    end do
+  end do
+  
   do m = 1, n_fields
 
     select case( trim( modal_volume_names(m) ) )
@@ -1230,8 +1260,13 @@ subroutine radaer_code( nlayers,                                               &
   ! -- ukca_modal_wtv --
   n_fields = size(modal_wtv_names)
   allocate(ukca_modal_wtv(1, nlayers, n_fields))
-  ukca_modal_wtv = 0.0_r_um
 
+  do m = 1, n_fields
+    do k = 1, nlayers
+      ukca_modal_wtv(1, k, m) = 0.0_r_um
+    end do
+  end do
+  
   do m = 1, n_fields
     select case(trim(modal_wtv_names(m)))
     case('fldname_pvol_wat_ait_sol')
@@ -1268,7 +1303,12 @@ subroutine radaer_code( nlayers,                                               &
   ! -- ukca_wet_diam --
   n_fields = size(wet_diam_mode_names)
   allocate(ukca_wet_diam(1, nlayers, n_fields))
-  ukca_wet_diam = 0.0_r_um
+
+  do m = 1, n_fields
+    do k = 1, nlayers
+      ukca_wet_diam(1, k, m) = 0.0_r_um
+    end do
+  end do
 
   do m = 1, n_fields
     select case(trim(wet_diam_mode_names(m)))
