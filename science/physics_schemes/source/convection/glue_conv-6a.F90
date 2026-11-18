@@ -1342,10 +1342,26 @@ real(kind=jprb)               :: zhook_handle
 
 ! In lfric_apps use timer not vernier
 
+integer(tik) :: tid_all_glue
 integer(tik) :: tid_init_6a_rain
+integer(tik) :: tid_init_6a_w2p
+integer(tik) :: tid_init_6a_npnts
+integer(tik) :: tid_init_6a_moist
+integer(tik) :: tid_wtrac_scatter_conv
+integer(tik) :: tid_wtrac_gather_conv
 integer(tik) :: tid_deep_conv_6a
+integer(tik) :: tid_shallow_conv_6a
+integer(tik) :: tid_congest_conv_6a
+integer(tik) :: tid_mid_conv_6a
+integer(tik) :: tid_wtrac_scatter_conv_mid
 
 if (lhook) call dr_hook(ModuleName//':'//RoutineName,zhook_in,zhook_handle)
+
+if ( LPROF ) then
+  call start_timing( tid_all_glue, RoutineName // 'init_6a_rain' )
+end if
+
+
 
 !-----------------------------------------------------------------------
 ! Initialise output variables not initialised already
@@ -1372,6 +1388,11 @@ end if
 
 !==========================================
 ! Initialise local arrays for w-eqn
+
+if ( LPROF ) then
+  call start_timing( tid_init_6a_w2p, RoutineName // 'init_6a_rain' )
+end if
+
 !
 if (flg_w_eqn) then
 
@@ -1379,14 +1400,24 @@ if (flg_w_eqn) then
                    w2p_dp )
 
 end if
+
+if ( LPROF ) then
+  call stop_timing( tid_init_6a_w2p, RoutineName // 'init_6a_rain' )
+end if
 !
 !==========================================
 
  ! Initialise various convection variables, outputs and diagnostics to zero
  ! at all points. Points not in the compression lists for the respective calls
- ! to DPCONV, SHCONV, MDCONV or CGCONV will remain zero.
+! to DPCONV, SHCONV, MDCONV or CGCONV will remain zero.
 
-call init_6a_npnts(seg_size, nlev, n_cca_lev, ncells, n_wtrac,                  &
+if ( LPROF ) then
+  call start_timing( tid_init_6a_npnts, RoutineName // 'init_6a_rain' )
+end if
+
+
+
+call init_6a_npnts(seg_size, nlev, n_cca_lev, ncells, n_wtrac,                 &
                    dqbydt, dthbydt, dqclbydt, dqcfbydt, dcflbydt, dcffbydt,    &
                    dbcfbydt, dqbydt_wtrac, dqclbydt_wtrac,                     &
                    dqcfbydt_wtrac, ccw, cca,                                   &
@@ -1401,12 +1432,24 @@ call init_6a_npnts(seg_size, nlev, n_cca_lev, ncells, n_wtrac,                  
                    wql_flux_sh, wthetal_flux_sh, wthetav_flux_sh,              &
                    uw_deep, vw_deep, uw_shall, vw_shall, uw_mid, vw_mid )
 
+if ( LPROF ) then
+  call stop_timing( tid_init_6a_npnts, RoutineName // 'init_6a_rain' )
+end if
+
 
 ! Initialisation of mt used for mixing/specific conversions using wet/dry rho.
 ! Also zero dubydt, dvbydt and dtrabydt arrays.
 
-call init_6a_moist(seg_size, nlev, ncells, ntra, rho_theta, rho_dry_theta,      &
-                   mt, dubydt, dvbydt, dtrabydt, l_tracer)
+if ( LPROF ) then
+  call start_timing( tid_init_6a_moist, RoutineName // 'init_6a_rain' )
+end if
+
+call init_6a_moist(seg_size, nlev, ncells, ntra, rho_theta, rho_dry_theta,     &
+     mt, dubydt, dvbydt, dtrabydt, l_tracer)
+
+if ( LPROF ) then
+  call stop_timing( tid_init_6a_moist, RoutineName // 'init_6a_rain' )
+end if
 !
 ! Required to get same convective cloud as old scheme
 ! Need to pass values from deep and shallow to mid level.
@@ -2044,9 +2087,18 @@ if (n_dp  >   0 .and. iconv_deep >  0 ) then
   ! required and decompress arrays
   if (l_wtrac_conv) then
 
-    call wtrac_scatter_conv(ncells, seg_size, n_dp, nlev, n_wtrac,              &
+    if ( LPROF ) then
+      call start_timing( tid_wtrac_scatter_conv, RoutineName // 'init_6a_rain' )
+    end if
+
+    call wtrac_scatter_conv(ncells, seg_size, n_dp, nlev, n_wtrac,             &
                             iconv_deep, dpi, mt, wtrac_e,                      &
                             dqbydt_wtrac, dqclbydt_wtrac, dqcfbydt_wtrac)
+
+    if ( LPROF ) then
+      call stop_timing( tid_wtrac_scatter_conv, RoutineName // 'init_6a_rain' )
+    end if
+    
   end if
 
 
@@ -2420,11 +2472,19 @@ if (n_sh  >   0 .and. iconv_shallow >  0) then
   ! Water tracers - allocate compressed sh arrays and convert between
   ! q and mixing ratio if required
 
+  if ( LPROF ) then
+      call start_timing( tid_wtrac_gather_conv, RoutineName // 'init_6a_rain' )
+  end if
+
   call wtrac_alloc_conv_e(n_sh, nlev, n_wtrac, wtrac_e)
 
   if (l_wtrac_conv) then
-    call wtrac_gather_conv(ncells,seg_size,n_sh,nlev,n_wtrac, iconv_shallow,    &
+    call wtrac_gather_conv(ncells,seg_size,n_sh,nlev,n_wtrac, iconv_shallow,   &
                            shi, mt, q_wtrac, qcl_wtrac, qcf_wtrac, wtrac_e)
+  end if
+
+  if ( LPROF ) then
+      call stop_timing( tid_wtrac_gather_conv, RoutineName // 'init_6a_rain' )
   end if
 
   !
@@ -2470,6 +2530,10 @@ if (n_sh  >   0 .and. iconv_shallow >  0) then
 
   if (iconv_shallow == 1) then !  G-R mass flux type scheme
 
+    if ( LPROF ) then
+      call start_timing( tid_shallow_conv_6a, RoutineName // 'init_6a_rain' )
+    end if
+
     call shallow_conv_6a(                                                      &
                             !in
        nbl,nlev,ntra,n_wtrac,n_cca_lev,n_sh,trlev,                             &
@@ -2513,6 +2577,10 @@ if (n_sh  >   0 .and. iconv_shallow >  0) then
        dwn_flux_sh,uw_shall_sh,vw_shall_sh,                                    &
        tcw_sh,cca_2d_sh,kterm_sh,ind_shall_sh,                                 &
        dt_dd_temp,dq_dd_temp,area_ud_temp )
+
+    if ( LPROF ) then
+      call stop_timing( tid_shallow_conv_6a, RoutineName // 'init_6a_rain' )
+    end if
 
   end if        ! test on shallow convection scheme
 
@@ -3170,6 +3238,10 @@ if (iconv_congestus ==  1) then
 
       ! new mass flux routine (at present a copy of shallow scheme)
 
+      if ( LPROF ) then
+        call start_timing( tid_congest_conv_6a, RoutineName // 'init_6a_rain' )
+      end if
+
       call congest_conv_6a(nbl,nlev,ntra,n_cca_lev,n_cg,trlev                  &
          ,              bland_cg                                               &
          ,              delthvu_cg                                             &
@@ -3219,8 +3291,13 @@ if (iconv_congestus ==  1) then
       !
       !        Not available yet - still to be written
       !
-    end if   ! test of type of congestus scheme
 
+      if ( LPROF ) then
+        call stop_timing( tid_congest_conv_6a, RoutineName // 'init_6a_rain' )
+      end if
+      
+    end if   ! test of type of congestus scheme
+    
     !-----------------------------------------------------------------------
     ! 3.3 Write data from congestus convection points to full arrays
     !-----------------------------------------------------------------------
@@ -3811,6 +3888,10 @@ if (iconv_mid >  0 .and. n_md > 0) then
 
   if (iconv_mid == 1) then ! Gregory-Rowntree mid level convection
 
+    if ( LPROF ) then
+      call start_timing( tid_mid_conv_6a, RoutineName // 'init_6a_rain' )
+    end if
+     
     call mid_conv_6a(                                                          &
                   !in
                   nbl,nlev,ntra,n_wtrac,n_cca_lev,n_md,trlev,                  &
@@ -3851,6 +3932,10 @@ if (iconv_mid >  0 .and. n_md > 0) then
                   uw_mid_md,vw_mid_md, cfl_limited_md,                         &
                   dt_dd_temp, dq_dd_temp, area_ud_temp,                        &
                   error_point,tnuc_new_md )
+
+    if ( LPROF ) then
+      call stop_timing( tid_mid_conv_6a, RoutineName // 'init_6a_rain' )
+    end if
 
     if (error_point /= 0) then
       errorstatus = 3   ! will cause model to fail
@@ -4156,9 +4241,21 @@ if (iconv_mid >  0 .and. n_md > 0) then
   ! required and decompress arrays
   if (l_wtrac_conv) then
 
-    call wtrac_scatter_conv_mid(ncells,seg_size,n_md,nlev,n_wtrac,              &
+    if ( LPROF ) then
+       call start_timing( tid_wtrac_scatter_conv_mid, &
+                          RoutineName // 'init_6a_rain' )
+    end if
+     
+    call wtrac_scatter_conv_mid(ncells,seg_size,n_md,nlev,n_wtrac,             &
                                 iconv_mid, mdi, mt, wtrac_e,                   &
                                 dqbydt_wtrac, dqclbydt_wtrac, dqcfbydt_wtrac)
+
+
+    if ( LPROF ) then
+       call stop_timing( tid_wtrac_scatter_conv_mid, &
+                          RoutineName // 'init_6a_rain' )
+    end if
+    
   end if
 
 
@@ -4376,7 +4473,11 @@ if (max(n_dp, n_sh, n_md) > 0) then
 end if
 
 
-    !-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
+
+if ( LPROF ) then
+  call stop_timing( tid_all_glue, RoutineName // 'init_6a_rain' )
+end if
 
 if (lhook) call dr_hook(ModuleName//':'//RoutineName,zhook_out,zhook_handle)
 return
